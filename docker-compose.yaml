@@ -1,0 +1,32 @@
+version: '3'
+
+networks:
+  devops:
+    driver: bridge
+
+services:
+  zookeeper-server:
+    image: zookeeper:v1.0.0
+    container_name: zookeeper
+    env_file: zookeeper/environment.env
+    build:
+        context: ./zookeeper
+        dockerfile: Dockerfile
+    ports:
+      - '2181:2181'
+    networks:
+      - devops
+    restart: always
+    
+  school-service:
+    image: school-service:1.0
+    container_name: school-service
+    build:
+        context: ../School
+        dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    networks:
+      - devops
+    restart: always
+  
