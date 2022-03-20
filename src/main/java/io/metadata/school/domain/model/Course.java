@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import io.metadata.school.domain.exceptions.CourseDataNotProvidedException;
+import io.metadata.school.domain.exceptions.CourseWithTooManyStudentsException;
 
 @Entity
 @Table(name = "course")
@@ -59,8 +60,15 @@ public class Course {
 		return name.isEmpty() || name.get().isBlank() || name.get().isEmpty();
 	}
 	
-	public Boolean itDoesNotHasTooManyStudents() {
-		return this.students.size() < 50;
+	private Boolean itHasTooManyStudents() {
+		return this.students.size() >= 50;
+	}
+	
+	public void addStudent(Student student) throws CourseWithTooManyStudentsException {
+		if(itHasTooManyStudents()) {
+			throw new CourseWithTooManyStudentsException();
+		}
+		this.students.add(student);
 	}
 
 	public Integer getId() {
@@ -69,13 +77,5 @@ public class Course {
 	
 	public String getName() {
 		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 }

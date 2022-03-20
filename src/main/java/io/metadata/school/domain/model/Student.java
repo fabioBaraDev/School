@@ -8,7 +8,9 @@ import javax.persistence.*;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import io.metadata.school.domain.exceptions.CourseWithTooManyStudentsException;
 import io.metadata.school.domain.exceptions.StudentDataNotProvidedException;
+import io.metadata.school.domain.exceptions.StudentWithTooManyCoursesException;
 
 @Entity
 @Table(name = "student")
@@ -28,18 +30,19 @@ public class Student {
 					@JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false, updatable = false) })
 	private Set<Course> courses = new HashSet<>();
 
-	/* 
+	/*
 	 * do not use this constructor, kept to JPA only
 	 */
-	public Student() {}
-	
+	public Student() {
+	}
+
 	public Student(Optional<String> name) throws StudentDataNotProvidedException {
 		if (isNotAValidName(name)) {
 			throw new StudentDataNotProvidedException();
 		}
 		this.name = name.get();
 	}
-		
+
 	public Student(Optional<String> name, Optional<Integer> id) throws StudentDataNotProvidedException {
 		if (isNotAValidName(name) || id.isEmpty()) {
 			throw new StudentDataNotProvidedException();
@@ -47,22 +50,13 @@ public class Student {
 		this.id = id.get();
 		this.name = name.get();
 	}
-	
+
 	private Boolean isNotAValidName(Optional<String> name) {
 		return name.isEmpty() || name.get().isBlank() || name.get().isEmpty();
 	}
 
-
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public Integer getId() {
@@ -73,17 +67,18 @@ public class Student {
 		return courses;
 	}
 
-	public void setCourses(Set<Course> courses) {
-		this.courses = courses;
-	}
+	public void registerIntoCourse(Course course)
+			throws CourseWithTooManyStudentsException, StudentWithTooManyCoursesException {
 
-	public void registerIntoCourse(Course course) {
-		if (course.itDoesNotHasTooManyStudents() && itDoNotHasTooManyCourses()) {
-			courses.add(course);
+		if (itHasTooManyCourses()) {
+			throw new StudentWithTooManyCoursesException();
 		}
+		
+		courses.add(course);
+		course.addStudent(this);
 	}
 
-	private Boolean itDoNotHasTooManyCourses() {
-		return courses.size() < 5;
+	private Boolean itHasTooManyCourses() {
+		return courses.size() >= 5;
 	}
 }

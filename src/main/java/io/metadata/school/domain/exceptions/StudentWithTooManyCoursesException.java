@@ -1,10 +1,10 @@
 package io.metadata.school.domain.exceptions;
 
-public class TooManyException extends Exception {
+public class StudentWithTooManyCoursesException extends Exception {
 
 	private static final long serialVersionUID = 3050220221809622111L;
 	
-	public TooManyException() {
-		super("This student has too many courses or the course are full");
+	public StudentWithTooManyCoursesException() {
+		super("This student already has 5 courses");
 	}
 }
