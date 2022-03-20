@@ -5,12 +5,13 @@ import java.util.Optional;
 
 import io.metadata.school.application.services.exception.CourseNotFoundException;
 import io.metadata.school.application.services.exception.NoDataToDeleteException;
+import io.metadata.school.domain.exceptions.CourseDataNotProvidedException;
 import io.metadata.school.domain.model.Course;
 
 public interface CourseService {
 
 	public Course save(Course course);
-	public Course update(Course course) throws CourseNotFoundException;
+	public Course update(Course course) throws CourseNotFoundException, CourseDataNotProvidedException;
 	public void deleteByCourseId(Integer id) throws NoDataToDeleteException;
 	public List<Course> findByName(String name);
 	public Optional<Course> findById(Integer id);

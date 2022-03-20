@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import io.metadata.school.application.services.CourseService;
 import io.metadata.school.application.services.exception.CourseNotFoundException;
 import io.metadata.school.application.services.exception.NoDataToDeleteException;
+import io.metadata.school.domain.exceptions.CourseDataNotProvidedException;
 import io.metadata.school.domain.model.Course;
 import io.metadata.school.infrastructure.repository.CourseRepository;
 
@@ -17,30 +18,32 @@ public class CourseServiceImpl implements CourseService {
 
 	@Autowired
 	private CourseRepository repository;
-	
+
 	@Override
 	public Course save(Course course) {
 		return repository.save(course);
 	}
 
 	@Override
-	public Course update(Course course) throws CourseNotFoundException {
+	public Course update(Course course) throws CourseNotFoundException, CourseDataNotProvidedException {
 		var courseFound = findById(course.getId());
-		if(courseFound.isEmpty())
+		if (courseFound.isEmpty())
 			throw new CourseNotFoundException();
-		
-		courseFound.get().setName(course.getName());
-		return repository.save(courseFound.get());
+
+		var name = Optional.of(course.getName());
+		var id = Optional.of(courseFound.get().getId());
+
+		return repository.save(new Course(name, id));
 	}
 
 	@Override
-	public void deleteByCourseId(Integer id) throws NoDataToDeleteException{
+	public void deleteByCourseId(Integer id) throws NoDataToDeleteException {
 		var rowsAffected = repository.deleteByCourseId(id);
 		verifyRowsAffected(rowsAffected);
 	}
 
 	private void verifyRowsAffected(Integer rowsAffected) throws NoDataToDeleteException {
-		if(!(rowsAffected > 0)) {
+		if (!(rowsAffected > 0)) {
 			throw new NoDataToDeleteException();
 		}
 	}
@@ -69,7 +72,6 @@ public class CourseServiceImpl implements CourseService {
 	public Optional<Course> findById(Integer id) {
 		return repository.findById(id);
 	}
-	
 
 	@Override
 	public List<Course> findAll() {

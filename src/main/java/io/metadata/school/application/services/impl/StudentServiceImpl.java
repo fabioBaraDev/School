@@ -12,6 +12,9 @@ import io.metadata.school.application.services.exception.NoDataToDeleteException
 import io.metadata.school.application.services.exception.StudentAlreadyHasThisCourseException;
 import io.metadata.school.application.services.exception.StudentNotFoundException;
 import io.metadata.school.application.services.exception.StudentOrCourseNotFoundException;
+import io.metadata.school.domain.exceptions.CourseWithTooManyStudentsException;
+import io.metadata.school.domain.exceptions.StudentDataNotProvidedException;
+import io.metadata.school.domain.exceptions.StudentWithTooManyCoursesException;
 import io.metadata.school.domain.model.Course;
 import io.metadata.school.domain.model.Student;
 import io.metadata.school.infrastructure.repository.StudentRepository;
@@ -31,13 +34,16 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public Student update(Student student) throws StudentNotFoundException {
+	public Student update(Student student) throws StudentNotFoundException, StudentDataNotProvidedException {
 		var studentFound = findById(student.getId());
 		if (studentFound.isEmpty())
 			throw new StudentNotFoundException();
 
-		studentFound.get().setName(student.getName());
-		return repository.save(studentFound.get());
+		var name = Optional.of(student.getName());
+		var id = Optional.of(studentFound.get().getId());
+		var studentUpdated = new Student(name, id);
+				
+		return repository.save(studentUpdated);
 	}
 
 	@Override
@@ -83,7 +89,9 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public void registerIntoCourse(Integer studentId, Integer courseId) throws StudentOrCourseNotFoundException, StudentAlreadyHasThisCourseException {
+	public void registerIntoCourse(Integer studentId, Integer courseId)
+			throws StudentOrCourseNotFoundException, StudentAlreadyHasThisCourseException,
+			CourseWithTooManyStudentsException, StudentWithTooManyCoursesException {
 
 		var student = findById(studentId);
 		var course = courseService.findById(courseId);
@@ -101,14 +109,16 @@ public class StudentServiceImpl implements StudentService {
 		}
 	}
 
-	private void isItAlredyHasThisCourse(Student student, Integer courseId) throws StudentAlreadyHasThisCourseException {
-		 if(student.getCourses().stream().filter(row -> row.getId() == courseId).count() > 0) {
-			 throw new StudentAlreadyHasThisCourseException();
-		 }
-		
+	private void isItAlredyHasThisCourse(Student student, Integer courseId)
+			throws StudentAlreadyHasThisCourseException {
+		if (student.getCourses().stream().filter(row -> row.getId() == courseId).count() > 0) {
+			throw new StudentAlreadyHasThisCourseException();
+		}
+
 	}
 
-	private void registerStudentIntoCourse(Student student, Course course) {
+	private void registerStudentIntoCourse(Student student, Course course)
+			throws CourseWithTooManyStudentsException, StudentWithTooManyCoursesException {
 		student.registerIntoCourse(course);
 		save(student);
 	}

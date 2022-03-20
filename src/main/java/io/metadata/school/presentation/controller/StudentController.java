@@ -89,19 +89,19 @@ public class StudentController {
 	}
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<StudentDTO> getById(@PathVariable Integer id) {
+	public ResponseEntity<Student> getById(@PathVariable Integer id) {
 
 		try {
 			var student = service.findById(id);
 
 			if (student.isPresent()) {
-				return new ResponseEntity<StudentDTO>(new StudentDTO(student.get()), HttpStatus.OK);
+				return new ResponseEntity<Student>(student.get(), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			return new ResponseEntity<StudentDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Student>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		return new ResponseEntity<StudentDTO>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<Student>(HttpStatus.NOT_FOUND);
 	}
 
 	@GetMapping("/name/{name}")

@@ -15,6 +15,8 @@ import io.metadata.school.application.services.StudentService;
 import io.metadata.school.application.services.exception.NoDataToDeleteException;
 import io.metadata.school.application.services.exception.StudentAlreadyHasThisCourseException;
 import io.metadata.school.application.services.exception.StudentOrCourseNotFoundException;
+import io.metadata.school.domain.exceptions.CourseWithTooManyStudentsException;
+import io.metadata.school.domain.exceptions.StudentWithTooManyCoursesException;
 import io.metadata.school.presentation.constants.Constants;
 import io.metadata.school.presentation.dto.RelationDTO;
 import io.metadata.school.presentation.dto.RelationsDTO;
@@ -48,9 +50,10 @@ public class RelationController {
 	public ResponseEntity<String> registerStudentToCourse(@RequestBody RelationDTO relation) {
 		try {
 			service.registerIntoCourse(relation.getStudentId(), relation.getCourseId());
-		} catch (StudentAlreadyHasThisCourseException e) {
+		} catch (StudentAlreadyHasThisCourseException | CourseWithTooManyStudentsException
+				| StudentWithTooManyCoursesException e) {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}catch (StudentOrCourseNotFoundException e) {
+		} catch (StudentOrCourseNotFoundException e) {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>(Constants.CONFIRM_REGISTRATION, HttpStatus.CREATED);
