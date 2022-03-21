@@ -1,23 +1,17 @@
-version: '3'
-
-networks:
-  devops:
-    driver: bridge
+version: "3.7"
 
 services:
-  zookeeper-server:
-    image: zookeeper:v1.0.0
-    container_name: zookeeper
-    env_file: zookeeper/environment.env
-    build:
-        context: ./zookeeper
-        dockerfile: Dockerfile
-    ports:
-      - '2181:2181'
-    networks:
-      - devops
+  mysql_db:
+    image: "mysql:8.0"
     restart: always
-    
+    environment:
+      MYSQL_DATABASE: school_database
+      MYSQL_USER: school
+      MYSQL_PASSWORD: school
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+      
   school-service:
     image: school-service:1.0
     container_name: school-service
@@ -25,8 +19,12 @@ services:
         context: ../School
         dockerfile: Dockerfile
     ports:
-      - '8080:8080'
-    networks:
-      - devops
+      - '8080:8080' 
+    depends_on:
+      - mysql_db
+    links:
+      - mysql_db:app_db
     restart: always
+
+
   

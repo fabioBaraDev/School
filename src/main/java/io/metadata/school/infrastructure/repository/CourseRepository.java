@@ -26,7 +26,7 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 	
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE course where id =:id ", nativeQuery = true)
+	@Query(value = "DELETE FROM course where id =:id ", nativeQuery = true)
 	Integer deleteByCourseId(@Param("id") Integer id);
 
 }

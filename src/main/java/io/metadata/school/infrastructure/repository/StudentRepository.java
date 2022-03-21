@@ -26,12 +26,12 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 	
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE student where id =:id ", nativeQuery = true)
+	@Query(value = "DELETE FROM student where id =:id ", nativeQuery = true)
 	Integer deleteByStudentId(@Param("id") Integer id);
 	
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE course_registration cr where cr.student_id =:studentId AND cr.course_id=:courseId ", nativeQuery = true)
+	@Query(value = "DELETE FROM course_registration cr where cr.student_id =:studentId AND cr.course_id=:courseId ", nativeQuery = true)
 	Integer deleteCourseRegistration(@Param("studentId") Integer studentId, @Param("courseId") Integer courseId);
 
 }
