@@ -2,6 +2,7 @@ package io.metadata.school.application.services.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -125,7 +126,7 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public List<Student> findAllRelationsBetweenStudentAndCourse() {
-		return repository.findAll();
+		return repository.findAll().stream().filter(row -> row.getCourses().size() > 0).collect(Collectors.toList());
 	}
 
 	@Override

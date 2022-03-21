@@ -29,4 +29,17 @@ public class StudentDTO {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+
+	@Override
+	public String toString() {
+
+		StringBuilder str = new StringBuilder();
+		String doubleQuotes = "\"";
+
+		str.append("{").append("\n").append(doubleQuotes).append("name").append(doubleQuotes).append(": ").append(doubleQuotes).append(this.getName().toString())
+				.append(doubleQuotes).append("\n").append("}");
+
+		return str.toString();
+	}
 }

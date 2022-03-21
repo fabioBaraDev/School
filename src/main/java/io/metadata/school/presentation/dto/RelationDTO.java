@@ -6,7 +6,7 @@ public class RelationDTO {
 
 	@JsonProperty("student_id")
 	private Integer studentId;
-	
+
 	@JsonProperty("course_id")
 	private Integer courseId;
 
@@ -24,5 +24,20 @@ public class RelationDTO {
 
 	public void setCourseId(Integer courseId) {
 		this.courseId = courseId;
+	}
+
+	@Override
+	public String toString() {
+
+		StringBuilder str = new StringBuilder();
+		String doubleQuotes = "\"";
+
+		str.append("{").append("\n").append(doubleQuotes).append("student_id").append(doubleQuotes).append(": ")
+				.append(doubleQuotes).append(this.getStudentId().toString()).append(doubleQuotes).append(",\n")
+				.append(doubleQuotes).append("course_id").append(doubleQuotes).append(": ")
+				.append(doubleQuotes).append(this.getCourseId().toString()).append(doubleQuotes).append("\n")
+				.append("}");
+
+		return str.toString();
 	}
 }
